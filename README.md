@@ -110,4 +110,30 @@ ADD INDEX idx_pco_times (times_together);
 
 ---
 
+### SQL: Create Final Recommendation
 
+```sql
+CREATE TABLE recommendation_table AS
+SELECT
+    ctp.customer_name,
+    pc.co_product AS recommended_product,
+    SUM(ctp.total_qty * 1.0 + COALESCE(pc.times_together, 0) * 0.5) AS final_score
+FROM customer_top_products ctp
+LEFT JOIN product_cooccurrence pc
+    ON ctp.product_name = pc.base_product
+GROUP BY ctp.customer_name, pc.co_product;
+
+```
+
+---
+
+### SQL: Add Index for Final Recommendation
+
+```sql
+ALTER TABLE recommendation_table 
+    ADD INDEX idx_rt_customer (customer_name),
+    ADD INDEX idx_rt_product (recommended_product);
+
+```
+
+---
