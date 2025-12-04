@@ -137,3 +137,24 @@ ALTER TABLE recommendation_table
 ```
 
 ---
+
+### SQL: SELECT Recommended Products from Customers LIKE 'IGA' & category = 'homeware'
+
+```sql
+SELECT 
+    pc.co_product AS recommended_product,
+    SUM(ctp.total_qty * 1.0 + pc.times_together * 0.5) AS final_score
+FROM customer_top_products ctp
+LEFT JOIN product_cooccurrence pc
+    ON ctp.product_name = pc.base_product
+LEFT JOIN dim_product dp
+    ON pc.co_product = dp.product_name
+WHERE ctp.customer_name LIKE '%IGA%'
+AND dp.category = 'homeware'
+GROUP BY pc.co_product
+ORDER BY final_score DESC
+LIMIT 50;
+
+```
+
+---
